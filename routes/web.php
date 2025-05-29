@@ -40,7 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('/api/facebook/pages', [FacebookController::class, 'getFacebookPages']);
-    Route::post('/api/facebook/post', [FacebookController::class, 'publishToFacebook']);
+    Route::post('/api/facebook/analytics', [FacebookController::class, 'getPageAnalytics']);
     Route::get('/api/facebook/{pageId}/posts', [FacebookController::class, 'getFacebookPosts']);
     Route::get('/api/facebook/{pageId}/analytics', [FacebookController::class, 'FacebookAnalytics']);
 

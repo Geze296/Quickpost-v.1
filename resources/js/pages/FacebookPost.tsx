@@ -1,74 +1,67 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-export default function FacebookPost() {
+export default function FacebookAnalytics() {
     const [pages, setPages] = useState([]);
-    const [selectedPage, setSelectedPage] = useState('');
-    const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [status, setStatus] = useState('');
+    const [selectedpage_id, setSelectedpage_id] = useState('');
+    const [analytics, setAnalytics] = useState(null);
 
+    // Fetch pages on component mount
+    const fetchPages = async () => {
+        try {
+            const response = await axios.get('/api/facebook/pages');
+            setPages(response.data);
+            console.log(pages);
+            
+        } catch (error) {
+            console.error('Failed to fetch pages:', error);
+        }
+    };
     useEffect(() => {
-        axios
-            .get('/api/facebook/pages')
-            .then((res) => {
-                setPages(res.data);
-                console.log(pages);
-            })
-            .catch(() => setStatus('Failed to load pages'));
+        fetchPages();
     }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!selectedPage || !message) return;
 
-        setLoading(true);
-        setStatus('');
-
+    // Fetch analytics for the selected page
+    const fetchAnalytics = async () => {
         try {
-            const response = await axios.post('/api/facebook/post', {
-                page_id: selectedPage,
-                message,
+            const response = await axios.post('/api/facebook/analytics', {
+                page_id: selectedpage_id,
             });
-            console.log(response.data);
-            
-            setStatus('✅ Post published successfully!');
-            setMessage('');
-        } catch (err: any) {
-            setStatus('❌ Failed: ' + (err.response?.data?.error || 'Unknown error'));
-        } finally {
-            setLoading(false);
+            setAnalytics(response.data);
+        } catch (error) {
+            console.error('Full error:', error.response); // Check the response body
+            alert(error.response?.data?.error || 'Failed to fetch analytics');
         }
     };
 
     return (
-        <div className="mx-auto max-w-md rounded bg-white p-4 shadow">
-            <h2 className="mb-4 text-xl font-bold">Post to Facebook Page</h2>
+        <div>
+            <h2>Facebook Analytics</h2>
+            <button onClick={fetchPages}>Load Pages</button>
+            
+            {/* Dropdown to select a page */}
+            <select 
+                value={selectedpage_id} 
+                onChange={(e) => setSelectedpage_id(e.target.value)}
+                disabled={!pages.length}
+            >
+                <option value="">Select a Page</option>
+                {pages.map((page) => (
+                    <option key={page.id} value={page.id}>
+                        {page.name}
+                    </option>
+                ))}
+            </select>
 
-            <form onSubmit={handleSubmit}>
-                <select value={selectedPage} onChange={(e) => setSelectedPage(e.target.value)} className="mb-3 w-full rounded border p-2">
-                    <option value="">Select a page</option>
-                    {pages.map((page: any) => (
-                        <option key={page.id} value={page.id}>
-                            {page.name}
-                        </option>
-                    ))}
-                </select>
+            <button onClick={fetchAnalytics} disabled={!selectedpage_id}>
+                Get Analytics
+            </button>
 
-                <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Write your post..."
-                    className="mb-3 w-full rounded border p-2"
-                    rows={4}
-                />
-
-                <button type="submit" disabled={loading} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50">
-                    {loading ? 'Posting...' : 'Post'}
-                </button>
-            </form>
-
-            {status && <p className="mt-3 text-sm">{status}</p>}
+            {/* Display analytics data */}
+            {analytics && (
+                <pre>{JSON.stringify(analytics, null, 2)}</pre>
+            )}
         </div>
     );
 }
