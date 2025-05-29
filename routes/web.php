@@ -18,6 +18,9 @@ use Laravel\Socialite\Facades\Socialite;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 
+Route::get('scheduled-posts', function () {
+    return Inertia::render('ScheduledPosts');
+});
 
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
 
@@ -29,6 +32,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/posts/schedule', function () {
         return Inertia::render('Post');
+    });
+    Route::get('/AdimnDashboard', function () {
+        return Inertia::render('AdimnDashboard');
+        
     });
 
     Route::get('/analytics', function () {

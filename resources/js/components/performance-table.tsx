@@ -85,7 +85,7 @@ export default function PerformanceTable() {
                             <td className="px-4 py-3">
                                 <div className="flex items-start gap-3">
                                     <Avatar className="mt-1 h-8 w-8">
-                                        <AvatarImage src={post.thumbnail || '/placeholder.svg?height=32&width=32'} alt="Post" />
+                                        <AvatarImage src={post.thumbnail || '/logo.svg?height=32&width=32'} alt="Post" />
                                         <AvatarFallback>YT</AvatarFallback>
                                     </Avatar>
                                     <div>

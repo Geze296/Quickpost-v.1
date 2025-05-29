@@ -77,7 +77,7 @@ export default function Dashboard() {
                 setContent(resContent.data.length);
                 setAccounts(response.data.channels || []);
                 setPosts(resPosts.data.length);
-            } catch (err) {
+            } catch (err: any) {
                console.log(err.response?.data?.message || err.message || 'Failed to fetch connected accounts');
             } finally {
             }
@@ -104,7 +104,7 @@ export default function Dashboard() {
         },
     ];
 
-    const { flash } = usePage().props as { flash: { error?: string; success?: string } };
+    const { flash } = (usePage().props as unknown as { flash: { error?: string; success?: string } });
 
     useEffect(() => {
         if (flash.error) {
